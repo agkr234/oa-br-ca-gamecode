@@ -190,12 +190,13 @@ static void CG_BattleAreaDamageScreen( void ) {
 
 void CG_EliminationBattleArea( centity_t *cent ) {
 	int resolution,opacity;
-	polyVert_t verts[3000];
+	polyVert_t verts[200];
 	float radius;
 	float interp;
 	float a,b;
 	vec3_t sub;
 	float dist;
+	int i;
 
 	interp = (float)(cg.time - cgs.roundStartTime) / (float)(cgs.roundtime * 1000);
 	if (interp <= 0 || interp > 1) {
@@ -217,7 +218,7 @@ void CG_EliminationBattleArea( centity_t *cent ) {
 		opacity = 255;
 	}
 
-	for (int i = 0; i < resolution; i++) {
+	for (i = 0; i < resolution; i++) {
 		a = (float)(i) / resolution;
 		b = (float)(i+1) / resolution;
 		verts[i*4].xyz[0] = cent->lerpOrigin[0] + radius * sin(a * 2*M_PI);
