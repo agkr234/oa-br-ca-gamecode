@@ -195,6 +195,8 @@ void SP_team_neutralobelisk( gentity_t *ent );
 
 void SP_item_botroam( gentity_t *ent ) { }
 
+void SP_info_BR_battlearea (gentity_t *ent);
+
 spawn_t	spawns[] = {
 	// info entities don't do anything at all, but provide positional
 	// information for things controlled by other processes
@@ -276,6 +278,7 @@ spawn_t	spawns[] = {
 	{"team_neutralobelisk", SP_team_neutralobelisk},
 
 	{"item_botroam", SP_item_botroam},
+	{"info_BR_battlearea", SP_info_BR_battlearea},
 
 	{NULL, 0}
 };

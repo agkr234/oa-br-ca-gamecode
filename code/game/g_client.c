@@ -829,6 +829,8 @@ void DisableWeapons(void)
 		}
 		client = g_entities + i;
 		client->client->ps.pm_flags |= PMF_ELIMWARMUP;
+		if (g_elimination_warmupfreeze.integer > 0)
+			client->client->ps.pm_flags |= PMF_ELIMWARMUP_MOVE;
 	}
 	ProximityMine_RemoveAll(); //Remove all the prox mines
 	return;
@@ -857,7 +859,7 @@ void EnableWeapons(void)
 		}
 
 		client = g_entities + i;
-		client->client->ps.pm_flags &= ~PMF_ELIMWARMUP;
+		client->client->ps.pm_flags &= ~(PMF_ELIMWARMUP | PMF_ELIMWARMUP_MOVE);
 	}
 	return;
 }
@@ -1876,6 +1878,8 @@ void ClientSpawn(gentity_t *ent) {
 	client->ps.pm_flags |= PMF_RESPAWNED;
 	if(G_IsARoundBasedGametype(g_gametype.integer)) {
 		client->ps.pm_flags |= PMF_ELIMWARMUP;
+		if (g_elimination_warmupfreeze.integer > 0)
+			client->ps.pm_flags |= PMF_ELIMWARMUP_MOVE;
 	}
 
 	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );

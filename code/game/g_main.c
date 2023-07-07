@@ -130,6 +130,14 @@ vmCvar_t g_elimination_chain;
 vmCvar_t g_elimination_mine;
 vmCvar_t g_elimination_nail;
 vmCvar_t g_elimination_lockspectator;
+vmCvar_t g_elimination_battlearea_radius;
+vmCvar_t g_elimination_battlearea_damage;
+vmCvar_t g_elimination_battlearea_damage_interval;
+vmCvar_t g_elimination_battlearea_debug_point;
+vmCvar_t g_elimination_battlearea_debug_point_x;
+vmCvar_t g_elimination_battlearea_debug_point_y;
+vmCvar_t g_elimination_itempickup;
+vmCvar_t g_elimination_warmupfreeze;
 vmCvar_t g_rockets;
 //dmn_clowns suggestions (with my idea of implementing):
 vmCvar_t g_instantgib;
@@ -340,6 +348,15 @@ static cvarTable_t gameCvarTable[] = {
 
 	{ &g_elimination_lockspectator, "elimination_lockspectator", "0", 0, qtrue },
 
+	{ &g_elimination_battlearea_radius, "elimination_battlearea_radius", "500", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue },
+	{ &g_elimination_battlearea_damage, "elimination_battlearea_damage", "15", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_elimination_battlearea_damage_interval, "elimination_battlearea_damage_interval", "2.0f", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_elimination_battlearea_debug_point, "elimination_battlearea_debug_point", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_elimination_battlearea_debug_point_x, "elimination_battlearea_debug_point_x", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_elimination_battlearea_debug_point_y, "elimination_battlearea_debug_point_y", "0", CVAR_ARCHIVE, 0, qtrue },
+
+	{ &g_elimination_itempickup, "elimination_itempickup", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_elimination_warmupfreeze, "elimination_warmupfreeze", "0", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_awardpushing, "g_awardpushing", "1", CVAR_ARCHIVE, 0, qtrue },
 
 	//g_persistantpowerups
@@ -731,6 +748,22 @@ static int G_CheckGametypeScripts( void )
 	return 0;
 }
 
+gentity_t *G_CreateBattleAreaEntity( void )
+{
+	gentity_t		*e;
+	
+	e = G_Spawn();
+	e->s.eType = ET_GENERAL;
+	e->s.extraFlags |= EXTRA_ELIM_BATTLEAREA;
+	e->r.svFlags |= SVF_BROADCAST;
+	e->neverFree = qtrue;
+
+	e->classname = "battlearea";
+
+	//trap_LinkEntity(e);
+	return e;
+}
+
 /*
 ============
 G_InitGame
@@ -891,6 +924,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		level.domination_points_count = 0; //make sure its not too big
 	}
 
+	if(g_gametype.integer == GT_ELIMINATION) {
+		level.battleareaEntity = G_CreateBattleAreaEntity();
+	}
 	PlayerStoreInit();
 
 	//Set vote flags
@@ -2730,6 +2766,10 @@ void G_RunFrame( int levelTime )
 			continue;
 		}
 
+		if ( ent->s.eType == ET_GENERAL && (ent->s.extraFlags & EXTRA_ELIM_BATTLEAREA)) {
+			G_RunBattleArea( ent );
+			continue;
+		}
 		G_RunThink( ent );
 	}
 

@@ -1142,6 +1142,7 @@ typedef struct {
 	sfxHandle_t	wstbimpdSound;
 	sfxHandle_t	wstbactvSound;
 
+	qhandle_t additiveWhiteShader;
 } cgMedia_t;
 
 typedef struct {
@@ -1200,7 +1201,7 @@ typedef struct {
 //Elimination
 	int				roundStartTime;	
 	int				roundtime;
-
+	int				battleareaRadius;
 //CTF Elimination
 	int				attackingTeam;
 
@@ -1429,6 +1430,9 @@ extern vmCvar_t cl_timeNudge;
 //unlagged - client options
 //extra CVARS elimination
 extern vmCvar_t cg_alwaysWeaponBar;
+extern vmCvar_t cg_battlearea_resolution;
+extern vmCvar_t cg_battlearea_opacity;
+extern vmCvar_t cg_battlearea_screen_opacity;
 extern vmCvar_t cg_hitsound;
 extern vmCvar_t cg_voip_teamonly;
 extern vmCvar_t cg_voteflags;

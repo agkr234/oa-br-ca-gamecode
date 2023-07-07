@@ -22,6 +22,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
+/*QUAKED info_BR_battlearea
+*/
+void SP_info_BR_battlearea(gentity_t *ent) {
+	ent->classname = "info_BR_battlearea";
+}
 
 static void CloseEliminationDoors( void ) {
 	gentity_t* next;
@@ -33,6 +38,118 @@ static void CloseEliminationDoors( void ) {
 			}
 		}
 	}
+}
+
+void G_ResetAllItems(void) {
+	gentity_t *ent;
+	int i;
+
+	ent = &g_entities[0];
+	for (i=0 ; i<level.num_entities ; i++, ent++) {
+		if ( !ent->inuse ) {
+			continue;
+		}
+
+		if ( ent->freeAfterEvent ) {
+			continue;
+		}
+
+		if ( !ent->r.linked && ent->neverFree ) {
+			continue;
+		}
+		
+		if ( ent->s.eType != ET_ITEM ) {
+			continue;
+		}
+
+		if (ent->item->giType == IT_TEAM) {
+			continue;
+		}
+		RespawnItem(ent);
+	}
+}
+
+void G_SelectBattleArea( gentity_t* ent )
+{
+	gentity_t		*e;
+	vec3_t		snapped;
+
+	if (g_elimination_battlearea_debug_point.integer == 0) {
+		e = SelectRandomEntity("info_BR_battlearea");
+	}
+
+	if (e) {
+		VectorCopy( e->s.origin, snapped );
+	} else {
+		snapped[0] = g_elimination_battlearea_debug_point_x.value;
+		snapped[1] = g_elimination_battlearea_debug_point_y.value;
+	}
+
+	SnapVector( snapped );		// save network bandwidth
+	G_SetOrigin( ent, snapped );
+}
+
+void G_ActiveBattleArea( void ) {
+	G_SelectBattleArea( level.battleareaEntity );
+	trap_LinkEntity( level.battleareaEntity );
+}
+
+void G_DeactiveBattleArea( void ) {
+	trap_UnlinkEntity( level.battleareaEntity );
+}
+
+void G_RunBattleArea( gentity_t *ent ) {
+	int i;
+	gentity_t	*cent;
+	float radius,interp;
+	vec3_t sub;
+	float dist;
+	int msec;
+	int damage,interval;
+
+	if (level.roundNumberStarted != level.roundNumber) {
+		return;
+	}
+
+	
+	msec = level.time - level.previousTime;
+	interp = (float)(level.time - level.roundStartTime) / (float)(g_elimination_roundtime.integer * 1000);
+	if (interp < 0) {
+		interp = 0;
+	} else if (interp > 1) {
+		interp = 1;
+	}
+
+	radius = (float)(g_elimination_battlearea_radius.integer) * (1 - interp);
+
+	damage = g_elimination_battlearea_damage.integer;
+	if (damage < 0) {
+		damage = 0;
+	} else if (damage > 200) {
+		damage = 200;
+	}
+
+	interval = g_elimination_battlearea_damage_interval.value * 1000;
+	if (interval < 10) {
+		interval = 10;
+	}
+
+	cent = &g_entities[0];
+	for ( i = 0; i < MAX_CLIENTS; i++, cent++ ) {
+		if ( cent->client && cent->inuse && cent->client->sess.sessionTeam < TEAM_SPECTATOR && cent->client->ps.pm_type == PM_NORMAL) {
+			VectorSubtract(cent->s.pos.trBase, ent->s.pos.trBase, sub);
+			sub[2] = 0;
+			dist = VectorLength(sub);
+			if (dist > radius) {
+				cent->client->areaDamageMsec += msec;
+			}
+			if (cent->client->areaDamageMsec >= interval) {
+				G_Damage (cent, NULL, NULL, NULL, NULL, damage, 0, MOD_LAVA);
+				cent->client->areaDamageMsec = 0;
+			}
+		}
+	}
+
 }
 
 static void CloseEliminationDoorsInstantly( void ) {
@@ -99,6 +216,7 @@ void StartEliminationRound(void) {
 	level.roundNumberStarted = level.roundNumber; //Set numbers
 	level.roundRedPlayers = countsLiving[TEAM_RED];
 	level.roundBluePlayers = countsLiving[TEAM_BLUE];
+	G_ActiveBattleArea();
 	if(g_gametype.integer == GT_CTF_ELIMINATION) {
 		Team_ReturnFlag( TEAM_RED );
 		Team_ReturnFlag( TEAM_BLUE );
@@ -122,6 +240,7 @@ void EndEliminationRound(void)
 	CloseEliminationDoors();
 	level.roundNumber++;
 	level.roundStartTime = level.time+1000*g_elimination_warmup.integer;
+	G_DeactiveBattleArea();
 	SendEliminationMessageToAllClients();
 	CalculateRanks();
 	level.roundRespawned = qfalse;
@@ -140,6 +259,7 @@ void RestartEliminationRound(void) {
 	level.roundRespawned = qfalse;
 	if(g_elimination_ctf_oneway.integer)
 		SendAttackingTeamMessageToAllClients();
+	G_ResetAllItems();
 }
 
 //Things to do during match warmup
@@ -342,6 +462,7 @@ void CheckElimination(void) {
 		RespawnAll();
 		CloseEliminationDoorsInstantly();
 		SendEliminationMessageToAllClients();
+		G_ResetAllItems();
 	}
 
 	if(level.time<=level.roundStartTime && level.time>level.roundStartTime-1000*g_elimination_activewarmup.integer)

@@ -425,6 +425,7 @@ struct gclient_s {
 	qboolean        spawnprotected;
 
 	int			accuracy[WP_NUM_WEAPONS][2];
+	int			areaDamageMsec;
 };
 
 
@@ -524,6 +525,7 @@ typedef struct {
 	qboolean roundRespawned;        //We have respawned for this round!
 	int eliminationSides;           //Random, change red/blue bases
 	qboolean humansEliminated;      //True if we are in an elimination mode and all humans have been eliminated
+	gentity_t* battleareaEntity;
 
 	//Added for Double Domination
 	//Points get status: TEAM_FREE for not taking, TEAM_RED/TEAM_BLUE for taken and TEAM_NONE for not spawned yet
@@ -625,6 +627,7 @@ void RestartEliminationRound(void);
 void SendAttackingTeamMessageToAllClients( void );
 void StartLMSRound(void);
 void WarmupEliminationRound(void);
+void G_RunBattleArea( gentity_t *ent );
 
 // KK-OAX Added this for common file stuff between Admin and Sprees.
 // g_fileops.c
@@ -1115,6 +1118,14 @@ extern vmCvar_t g_elimination_mine;
 extern vmCvar_t g_elimination_nail;
 //If lockspectator: 0=no limit, 1 = cannot follow enemy, 2 = must follow friend
 extern vmCvar_t g_elimination_lockspectator;
+extern vmCvar_t g_elimination_battlearea_radius;
+extern vmCvar_t g_elimination_battlearea_damage;
+extern vmCvar_t g_elimination_battlearea_damage_interval;
+extern vmCvar_t g_elimination_battlearea_debug_point;
+extern vmCvar_t g_elimination_battlearea_debug_point_x;
+extern vmCvar_t g_elimination_battlearea_debug_point_y;
+extern vmCvar_t g_elimination_itempickup;
+extern vmCvar_t g_elimination_warmupfreeze;
 extern vmCvar_t g_rockets;
 //new in elimination Beta2
 extern vmCvar_t g_instantgib;
