@@ -428,7 +428,7 @@ static void ClientTimerActions( gentity_t *ent, int msec ) {
 		client->timeResidual -= 1000;
 
 		//Stop in elimination!!!
-		if (client->ps.pm_flags & PMF_ELIMWARMUP)
+		if (client->ps.pm_flags & (PMF_ELIMWARMUP | PMF_ELIMWARMUP_MOVE))
 			continue;
 
 		// regenerate

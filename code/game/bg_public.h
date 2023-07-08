@@ -190,6 +190,7 @@ typedef enum {
 #define PMF_INVULEXPAND		16384	// invulnerability sphere set to full size
 //Elimination players cannot fire in warmup
 #define PMF_ELIMWARMUP		32768	//Bit 15
+#define PMF_ELIMWARMUP_MOVE	65536	//Bit 16
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 
@@ -301,6 +302,8 @@ typedef enum {
 #define	EF_AWARD_ASSIST		0x00020000		// draw a assist sprite
 #define EF_AWARD_DENIED		0x00040000		// denied
 #define EF_TEAMVOTED		0x00080000		// already cast a team vote
+
+#define EXTRA_ELIM_BATTLEAREA	0x00000001		// draw a battle area
 
 // NOTE: may not have more than 16
 typedef enum {

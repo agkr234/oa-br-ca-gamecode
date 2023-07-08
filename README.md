@@ -1,36 +1,34 @@
-# OpenArena gamecode
-![Build status](https://github.com/openarena/gamecode/actions/workflows/main.yml/badge.svg) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/90453976351f455f89d42651658fa63a)](https://www.codacy.com/app/github_43/gamecode_2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OpenArena/gamecode&amp;utm_campaign=Badge_Grade)
+# OpenArena Battle Royale mod
+This mod aims to add flavor to Elimination (Clan Arena) mode.
+## Features
+- Battle Royale ring
+- Item pickup
+  - Item respawn after every rounds.
 
-## Description ##
-This is the game code part of OpenArena. In mod form it is referred as OpenArenaExpanded (OAX).
+## Changes
+- Personal teleporter is replaced with boost abillity
+  - it will double the player velocity for a moment.
+## TODO
+- Player ability
+- Buy menu
+  - I need to create some UI.
 
-## Building ##
+## Cvars
+### Client
+| Name | Type | Default | Description | 
+| ----- | ----- | ----- | ----- |
+| cg_battlearea_resolution | integer | 36 | the smoothness of the rendering ring |
+| cg_battlearea_opacity | integer | 64 | the opacity of the rendering ring |
+| cg_battlearea_screen_opacity | float | 32 | the opacity of the red screen when a player is outside of the ring |
+### Server
+| Name | Type | Default | Description | 
+| ----- | ----- | ----- | ----- |
+| elimination_battlearea_radius | integer | 500 | the starting radius of the ring |
+| elimination_battlearea_damage | integer | 15 | the amount of damage which the players outside of the ring will take |
+| elimination_battlearea_damage_interval | float | 2.0f | the interval of the ring damage. Calculated in seconds |
+| elimination_battlearea_debug_point | boolean | 0 | 0: server will choose a random ring point from `info_BR_battlearea` map entities on every round. <br> 1: you can choose the arbitary ring point using `g_elimination_battlearea_debug_point_x` and `g_elimination_battlearea_debug_point_y` |
+| elimination_battlearea_debug_point_x | integer | 0 | see `g_elimination_battlearea_debug_point` |
+| elimination_battlearea_debug_point_y | integer | 0 | see `g_elimination_battlearea_debug_point` |
+| elimination_itempickup | boolean | 1 | whether to enable items on map. if set to 1, items will respawn on every round. |
+| elimination_warmupfreeze | boolean | 0 | whether to force players to freeze until a round starts |
 
-You need a C-compiler (tested with gcc and clang) and GNU make then just type
-```
-make
-```
-and the qvm-files will be build. Ready to be packed into a pk3-file.
-
-See https://github.com/OpenArena/gamecode/wiki/Build-instruction for more details.
-
-See http://openarena.wikia.com/wiki/OpenArena_eXpanded for alternative build options
-
-## Extracting entities ##
-It is possible to extract entity definition for use with GtkRadiant and NetRadiant like this:
-
-```
-cd code/game
-./extract_entities.sh > openarena.def
-```
-
-## Links ##
-Development documentation is located here: https://github.com/OpenArena/gamecode/wiki
-
-The development board on the OpenArena forum: http://openarena.ws/board/index.php?board=30.0
-
-In particular the Open Arena Expanded topic: http://openarena.ws/board/index.php?topic=1908.0
-
-## License ##
-
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.

@@ -251,6 +251,9 @@ vmCvar_t cl_timeNudge;
 
 //elimination addition
 vmCvar_t cg_alwaysWeaponBar;
+vmCvar_t cg_battlearea_resolution;
+vmCvar_t cg_battlearea_opacity;
+vmCvar_t cg_battlearea_screen_opacity;
 vmCvar_t cg_hitsound;
 vmCvar_t cg_voip_teamonly;
 vmCvar_t cg_voteflags;
@@ -394,6 +397,9 @@ static cvarTable_t cvarTable[] = {// bk001129
 	{ &cg_paused, "cl_paused", "0", CVAR_ROM},
 	{ &cg_blood, "com_blood", "1", CVAR_ARCHIVE},
 	{ &cg_alwaysWeaponBar, "cg_alwaysWeaponBar", "0", CVAR_ARCHIVE}, //Elimination
+	{ &cg_battlearea_resolution, "cg_battlearea_resolution", "36", CVAR_ARCHIVE},
+	{ &cg_battlearea_opacity, "cg_battlearea_opacity", "64", CVAR_ARCHIVE},
+	{ &cg_battlearea_screen_opacity, "cg_battlearea_screen_opacity", "32", CVAR_ARCHIVE},
 	{ &cg_hitsound, "cg_hitsound", "0", CVAR_ARCHIVE},
 	{ &cg_voip_teamonly, "cg_voipTeamOnly", "1", CVAR_ARCHIVE},
 	{ &cg_voteflags, "cg_voteflags", "*", CVAR_ROM},
@@ -1388,6 +1394,8 @@ static void CG_RegisterGraphics(void) {
 		}
 		cgs.gameModels[i] = trap_R_RegisterModel(modelName);
 	}
+
+	cgs.media.additiveWhiteShader = trap_R_RegisterShader("additiveWhite");
 
 #ifdef MISSIONPACK
 	// new stuff

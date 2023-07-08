@@ -154,6 +154,119 @@ static void CG_EntityEffects( centity_t *cent ) {
 
 }
 
+static void CG_BattleAreaDamageScreen( void ) {
+	refEntity_t		ent;
+	int				opacity;
+	if (cg.cameraMode) {
+		return;
+	}
+
+	// ragePro systems can't fade blends, so don't obscure the screen
+	if ( cgs.glconfig.hardwareType == GLHW_RAGEPRO ) {
+		return;
+	}
+
+	memset( &ent, 0, sizeof( ent ) );
+	ent.reType = RT_SPRITE;
+	ent.renderfx = RF_FIRST_PERSON;
+
+	VectorMA( cg.refdef.vieworg, 8, cg.refdef.viewaxis[0], ent.origin );
+
+	opacity = cg_battlearea_screen_opacity.integer;
+	if (opacity > 255) {
+		opacity = 255;
+	} else if (opacity < 8) {
+		opacity = 8;
+	}
+
+	ent.radius = 100;
+	ent.customShader = cgs.media.additiveWhiteShader;
+	ent.shaderRGBA[0] = 255;
+	ent.shaderRGBA[1] = 0;
+	ent.shaderRGBA[2] = 0;
+	ent.shaderRGBA[3] = opacity;
+	trap_R_AddRefEntityToScene( &ent );
+}
+
+void CG_EliminationBattleArea( centity_t *cent ) {
+	int resolution,opacity;
+	polyVert_t verts[200];
+	float radius;
+	float interp;
+	float a,b;
+	vec3_t sub;
+	float dist;
+	int i;
+
+	interp = (float)(cg.time - cgs.roundStartTime) / (float)(cgs.roundtime * 1000);
+	if (interp <= 0 || interp > 1) {
+		return;
+	}
+
+	radius = cgs.battleareaRadius * (1 - interp);
+
+	if (cg_battlearea_resolution.integer < 6) {
+		resolution = 6;
+	} else {
+		resolution = cg_battlearea_resolution.integer;
+	}
+
+	opacity = cg_battlearea_opacity.integer;
+	if (cg_battlearea_opacity.integer < 8) {
+		opacity = 8;
+	} else if (cg_battlearea_opacity.integer > 255) {
+		opacity = 255;
+	}
+
+	for (i = 0; i < resolution; i++) {
+		a = (float)(i) / resolution;
+		b = (float)(i+1) / resolution;
+		verts[i*4].xyz[0] = cent->lerpOrigin[0] + radius * sin(a * 2*M_PI);
+		verts[i*4].xyz[1] = cent->lerpOrigin[1] + radius * cos(a * 2*M_PI);
+		verts[i*4].xyz[2] = 8096.0f;
+		verts[i*4].modulate[0] = 255;
+		verts[i*4].modulate[1] = 0;
+		verts[i*4].modulate[2] = 0;
+		verts[i*4].modulate[3] = opacity;
+		verts[i*4].st[0] = 0;
+		verts[i*4].st[1] = a;
+		verts[i*4+1].xyz[0] = cent->lerpOrigin[0] + radius * sin(a * 2*M_PI);
+		verts[i*4+1].xyz[1] = cent->lerpOrigin[1] + radius * cos(a * 2*M_PI);
+		verts[i*4+1].xyz[2] = -8096.0f;
+		verts[i*4+1].modulate[0] = 255;
+		verts[i*4+1].modulate[1] = 0;
+		verts[i*4+1].modulate[2] = 0;
+		verts[i*4+1].modulate[3] = opacity;
+		verts[i*4+1].st[0] = 1;
+		verts[i*4+1].st[1] = a;
+		verts[i*4+2].xyz[0] = cent->lerpOrigin[0] + radius * sin(b * 2*M_PI);
+		verts[i*4+2].xyz[1] = cent->lerpOrigin[1] + radius * cos(b * 2*M_PI);
+		verts[i*4+2].xyz[2] = -8096.0f;
+		verts[i*4+2].modulate[0] = 255;
+		verts[i*4+2].modulate[1] = 0;
+		verts[i*4+2].modulate[2] = 0;
+		verts[i*4+2].modulate[3] = opacity;
+		verts[i*4+2].st[0] = 1;
+		verts[i*4+2].st[1] = b;
+		verts[i*4+3].xyz[0] = cent->lerpOrigin[0] + radius * sin(b * 2*M_PI);
+		verts[i*4+3].xyz[1] = cent->lerpOrigin[1] + radius * cos(b * 2*M_PI);
+		verts[i*4+3].xyz[2] = 8096.0f;
+		verts[i*4+3].modulate[0] = 255;
+		verts[i*4+3].modulate[1] = 0;
+		verts[i*4+3].modulate[2] = 0;
+		verts[i*4+3].modulate[3] = opacity;
+		verts[i*4+3].st[0] = 0;
+		verts[i*4+3].st[1] = b;		
+		trap_R_AddPolyToScene( cgs.media.additiveWhiteShader, 4, &verts[i*4] );
+	}
+
+	VectorSubtract(cg.refdef.vieworg, cent->lerpOrigin, sub);
+	sub[2] = 0;
+	dist = VectorLength(sub);
+	if (dist > radius) {
+		CG_BattleAreaDamageScreen();
+	}
+}
 
 /*
 ==================
