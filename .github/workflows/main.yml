@@ -43,7 +43,7 @@ jobs:
         uses: actions/download-artifact@v3.0.1
 
       - name: Create pk3
-        run: 7z a -r oa-brca-vm.pk3 ./vm/
+        run: 7z a -tzip -r oa-brca-vm.pk3 ./vm/
 
       - name: Create brca directory
         run: mkdir ./brca
@@ -52,7 +52,7 @@ jobs:
         run: mv oa-brca-vm.pk3 ./brca
 
       - name: Create package
-        run: 7z a -r oa-brca-vm.zip ./brca/
+        run: 7z a -tzip -r oa-brca-vm.zip ./brca/
 
       - name: Create latest build
         uses: marvinpinto/action-automatic-releases@latest
