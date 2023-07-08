@@ -207,6 +207,8 @@ void CG_EliminationBattleArea( centity_t *cent ) {
 
 	if (cg_battlearea_resolution.integer < 6) {
 		resolution = 6;
+	} else if (cg_battlearea_resolution.integer > 49) {
+		resolution = 49;
 	} else {
 		resolution = cg_battlearea_resolution.integer;
 	}
