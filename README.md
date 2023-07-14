@@ -1,4 +1,4 @@
-# OpenArena Battle Royale mod
+# OpenArena Clan Arena EX mod
 This mod aims to add flavor to Elimination (Clan Arena) mode.
 ## Features
 - Battle Royale ring

@@ -58,16 +58,16 @@ jobs:
         uses: actions/download-artifact@v3.0.1
 
       - name: Create pk3
-        run: 7z a -tzip -r z-oa-brca.pk3 ./vm/ ./scripts/
+        run: 7z a -tzip -r z-oa-caex.pk3 ./vm/ ./scripts/
 
-      - name: Create brca directory
-        run: mkdir ./brca
+      - name: Create caex directory
+        run: mkdir ./caex
 
       - name: Move pk3
-        run: mv z-oa-brca.pk3 ./brca
+        run: mv z-oa-caex.pk3 ./caex
 
       - name: Create package
-        run: 7z a -tzip -r oa-brca-game.zip ./brca/
+        run: 7z a -tzip -r oa-caex-game.zip ./caex/
 
       - name: Create latest build
         uses: marvinpinto/action-automatic-releases@latest
@@ -90,16 +90,16 @@ jobs:
 #       uses: actions/download-artifact@v3.0.1
 
 #     - name: Create pk3
-#       run: 7z a -r oa-brca-vm.pk3 ./vm/
+#       run: 7z a -r oa-caex-vm.pk3 ./vm/
 
-#     - name: Create brca directory
-#       run: mkdir ./brca
+#     - name: Create caex directory
+#       run: mkdir ./caex
 
 #     - name: Move pk3
-#       run: mv oa-brca-vm.pk3 ./brca
+#       run: mv oa-caex-vm.pk3 ./caex
 
 #     - name: Create package
-#       run: 7z a -r oa-brca-vm.zip ./brca/
+#       run: 7z a -r oa-caex-vm.zip ./caex/
 
 #     - name: Upload archive
 #       uses: "svenstaro/upload-release-action@latest"
@@ -107,4 +107,4 @@ jobs:
 #         repo_token: ${{ secrets.GITHUB_TOKEN }}
 #         tag: ${{ github.ref }}
 #         overwrite: true
-#         file: oa-brca-vm.zip
+#         file: oa-caex-vm.zip
